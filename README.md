@@ -545,6 +545,12 @@ print(Library.flags["walkspeed"]) -- number
 
 ---
 
+## License
+
+MIT — see [LICENSE](LICENSE)
+
+---
+
 ## Full Example
 
 ```lua
