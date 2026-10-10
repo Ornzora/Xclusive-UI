@@ -441,7 +441,7 @@ function Library:CreateWindow(Config: {
 	MinimizeButton.TextColor3 = Config.Color
 	MinimizeButton.Font = Enum.Font.GothamBold
 	MinimizeButton.TextSize = 16
-	MinimizeButton.ZIndex = BASE_ZINDEX + 2
+	MinimizeButton.ZIndex = 12
 	MinimizeButton.Parent = Topbar
 	local MinimizeCorner = Instance.new("UICorner")
 	MinimizeCorner.CornerRadius = UDim.new(0, 4)
