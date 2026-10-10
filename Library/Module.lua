@@ -7,7 +7,19 @@ local Library = {
 	tick = tick(),
 	Connections = {},
 	flags = {},
-	Windows = {}
+	Windows = {},
+	Themes = {
+		Default = Color3.fromRGB(255, 255, 255),
+		Dark    = Color3.fromRGB(180, 180, 180),
+		Red     = Color3.fromRGB(220, 55,  55),
+		Blue    = Color3.fromRGB(55,  120, 220),
+		Green   = Color3.fromRGB(55,  200, 100),
+		Purple  = Color3.fromRGB(150, 55,  220),
+		Orange  = Color3.fromRGB(255, 128, 64),
+		Pink    = Color3.fromRGB(220, 80,  150),
+		Cyan    = Color3.fromRGB(55,  200, 220),
+		Yellow  = Color3.fromRGB(220, 200, 55),
+	}
 }
 local cloneref = cloneref or function(v)
 	return v
@@ -398,7 +410,7 @@ function Library:CreateWindow(Config: {
 	Config = Config or {}
 	Config.Keybind      = Config.Keybind      or Enum.KeyCode.RightShift
 	Config.WindowName   = Config.WindowName   or "Developer Mode"
-	Config.Color        = Config.Color        or Color3.fromRGB(255, 128, 64)
+	Config.Color        = Config.Color        or Color3.fromRGB(255, 255, 255)
 	Config.MinHeight    = Config.MinHeight    or 100
 	Config.MaxHeight    = Config.MaxHeight    or 600
 	Config.InitialHeight= Config.InitialHeight or 400
@@ -416,6 +428,42 @@ function Library:CreateWindow(Config: {
 
 	Main.Size = UDim2.new(0, Config.InitialWidth, 0, Config.InitialHeight)
 	makeresizable(Main, Config.MinHeight, Config.MaxHeight, Config.MinWidth, Config.MaxWidth)
+
+	local IsMinimized = false
+	local OriginalHeight = Config.InitialHeight
+	local MinimizeButton = Instance.new("TextButton")
+	MinimizeButton.Name = "MinimizeButton"
+	MinimizeButton.Size = UDim2.new(0, 28, 0, 22)
+	MinimizeButton.Position = UDim2.new(1, -62, 0, 6)
+	MinimizeButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+	MinimizeButton.BackgroundTransparency = 0.4
+	MinimizeButton.Text = "-"
+	MinimizeButton.TextColor3 = Config.Color
+	MinimizeButton.Font = Enum.Font.GothamBold
+	MinimizeButton.TextSize = 16
+	MinimizeButton.ZIndex = BASE_ZINDEX + 2
+	MinimizeButton.Parent = Topbar
+	local MinimizeCorner = Instance.new("UICorner")
+	MinimizeCorner.CornerRadius = UDim.new(0, 4)
+	MinimizeCorner.Parent = MinimizeButton
+	table.insert(Library.Connections, MinimizeButton.MouseButton1Click:Connect(function()
+		if IsMinimized then
+			IsMinimized = false
+			MinimizeButton.Text = "-"
+			TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+				Size = UDim2.new(0, Main.AbsoluteSize.X, 0, OriginalHeight),
+			}):Play()
+			Holder.Visible = true
+		else
+			IsMinimized = true
+			OriginalHeight = Main.AbsoluteSize.Y
+			MinimizeButton.Text = "+"
+			Holder.Visible = false
+			TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+				Size = UDim2.new(0, Main.AbsoluteSize.X, 0, 36),
+			}):Play()
+		end
+	end))
 
 	Screen.Name = HttpService:GenerateGUID(false)
 	Screen.Parent = Parent
@@ -855,6 +903,9 @@ function Library:CreateWindow(Config: {
 		end
 		if SearchBar and SearchBar.Text ~= "" then
 			FilterSections(SearchBar.Text)
+		end
+		if IsMinimized ~= nil then
+			MinimizeButton.TextColor3 = Color
 		end
 	end
 
@@ -5687,6 +5738,24 @@ function Library:Destroy()
 
 	Library.tick = nil
 	Library.flags = {}
+end
+
+function Library:SetTheme(ThemeName)
+	local color = Library.Themes[ThemeName]
+	if not color then return end
+	for _, win in next, Library.Windows do
+		if win.ChangeColor then
+			win:ChangeColor(color)
+		end
+	end
+end
+
+function Library:GetThemes()
+	local names = {}
+	for k in next, Library.Themes do
+		table.insert(names, k)
+	end
+	return names
 end
 
 return Library
