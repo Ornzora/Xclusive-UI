@@ -408,7 +408,7 @@ function Library:CreateWindow(Config: {
 	local WindowInit: Window = {}
 
 	Config = Config or {}
-	Config.Keybind      = Config.Keybind      or Enum.KeyCode.RightShift
+	Config.Keybind      = Config.Keybind      or Enum.KeyCode.F3
 	Config.WindowName   = Config.WindowName   or "Developer Mode"
 	Config.Color        = Config.Color        or Color3.fromRGB(255, 255, 255)
 	Config.MinHeight    = Config.MinHeight    or 100
@@ -429,43 +429,16 @@ function Library:CreateWindow(Config: {
 	Main.Size = UDim2.new(0, Config.InitialWidth, 0, Config.InitialHeight)
 	makeresizable(Main, Config.MinHeight, Config.MaxHeight, Config.MinWidth, Config.MaxWidth)
 
-	local IsMinimized = false
-	local OriginalHeight = Config.InitialHeight
-	local MinimizeButton = Instance.new("TextButton")
-	MinimizeButton.Name = "MinimizeButton"
-	MinimizeButton.Size = UDim2.new(0, 28, 0, 22)
-	MinimizeButton.Position = UDim2.new(1, -62, 0, 6)
-	MinimizeButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-	MinimizeButton.BackgroundTransparency = 0.4
-	MinimizeButton.Text = "-"
-	MinimizeButton.TextColor3 = Config.Color
-	MinimizeButton.Font = Enum.Font.GothamBold
-	MinimizeButton.TextSize = 16
-	MinimizeButton.ZIndex = 12
-	MinimizeButton.Parent = Topbar
-	local MinimizeCorner = Instance.new("UICorner")
-	MinimizeCorner.CornerRadius = UDim.new(0, 4)
-	MinimizeCorner.Parent = MinimizeButton
-	table.insert(Library.Connections, MinimizeButton.MouseButton1Click:Connect(function()
-		if IsMinimized then
-			IsMinimized = false
-			MinimizeButton.Text = "-"
-			TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-				Size = UDim2.new(0, Main.AbsoluteSize.X, 0, OriginalHeight),
-			}):Play()
-			Holder.Visible = true
-		else
-			IsMinimized = true
-			OriginalHeight = Main.AbsoluteSize.Y
-			MinimizeButton.Text = "+"
-			Holder.Visible = false
-			TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-				Size = UDim2.new(0, Main.AbsoluteSize.X, 0, 36),
-			}):Play()
-		end
-	end))
 
 	Screen.Name = HttpService:GenerateGUID(false)
+	-- Default parent to a safe GUI container when none is provided
+	if not Parent then
+		if gethui then
+			Parent = gethui()
+		else
+			Parent = cloneref(game:GetService("CoreGui"))
+		end
+	end
 	Screen.Parent = Parent
 	Topbar.WindowName.Text = Config.WindowName
 	function Library:SetWindowName(str)
@@ -500,42 +473,6 @@ function Library:CreateWindow(Config: {
 
 	local ReopenButton = crebutton(Screen, Main, Config, Toggle)
 
-	local SearchBar = Topbar.SearchBar
-	table.insert(
-		Library.Connections,
-		SearchBar.MouseEnter:Connect(function()
-			if not SearchBar:IsFocused() then
-				TweenService:Create(SearchBar, TweenInfo.new(0.15), { BackgroundColor3 = Color3.fromRGB(30, 30, 30) })
-					:Play()
-			end
-		end)
-	)
-
-	table.insert(
-		Library.Connections,
-		SearchBar.MouseLeave:Connect(function()
-			if not SearchBar:IsFocused() then
-				TweenService:Create(SearchBar, TweenInfo.new(0.15), { BackgroundColor3 = Color3.fromRGB(25, 25, 25) })
-					:Play()
-			end
-		end)
-	)
-
-	table.insert(
-		Library.Connections,
-		SearchBar.Focused:Connect(function()
-			TweenService:Create(SearchBar, TweenInfo.new(0.15), { BackgroundColor3 = Color3.fromRGB(35, 35, 35) })
-				:Play()
-		end)
-	)
-
-	table.insert(
-		Library.Connections,
-		SearchBar.FocusLost:Connect(function()
-			TweenService:Create(SearchBar, TweenInfo.new(0.15), { BackgroundColor3 = Color3.fromRGB(25, 25, 25) })
-				:Play()
-		end)
-	)
 
 	makedraggable(Main, Main)
 
@@ -574,60 +511,8 @@ function Library:CreateWindow(Config: {
 	WindowInit.ToggleVisibility = Toggle
 	table.insert(Library.ColorTable, ReopenButton)
 
-	local AllSections = {}
 	local IsTabSwitching = false
 
-	local function FilterSections(SearchText)
-		SearchText = string.lower(SearchText)
-		local CurrentTab = Library.CurrentTab or TContainer:FindFirstChild(Library.FirstTab .. " T")
-		if not CurrentTab then
-			return
-		end
-		for SectionFrame, SectionData in next, AllSections do
-			if SectionData.TabParent == CurrentTab then
-				local SectionName = SectionData.Name
-				local Found = string.find(string.lower(SectionName), SearchText)
-				if SearchText == "" then
-					SectionFrame.Visible = true
-					SectionFrame.Title.TextColor3 = Color3.fromRGB(150, 150, 150)
-					if SectionFrame:FindFirstChild("Highlight") then
-						SectionFrame.Highlight:Destroy()
-					end
-				else
-					if Found then
-						SectionFrame.Visible = true
-						SectionFrame.Title.TextColor3 = Config.Color
-						if not SectionFrame:FindFirstChild("Highlight") then
-							local Highlight = Instance.new("Frame")
-							Highlight.Name = "Highlight"
-							Highlight.Parent = SectionFrame
-							Highlight.BackgroundColor3 = Config.Color
-							Highlight.BorderSizePixel = 0
-							Highlight.Position = UDim2.new(0, 0, 1, 0)
-							Highlight.Size = UDim2.new(1, 0, 0, 2)
-							Highlight.ZIndex = 2
-							table.insert(Library.ColorTable, Highlight)
-						else
-							SectionFrame.Highlight.BackgroundColor3 = Config.Color
-						end
-					else
-						SectionFrame.Visible = false
-						SectionFrame.Title.TextColor3 = Color3.fromRGB(150, 150, 150)
-						if SectionFrame:FindFirstChild("Highlight") then
-							SectionFrame.Highlight:Destroy()
-						end
-					end
-				end
-			end
-		end
-	end
-
-	table.insert(
-		Library.Connections,
-		SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
-			FilterSections(SearchBar.Text)
-		end)
-	)
 
 	local TransitionFrame = nil
 	local function CreateTransitionFrame(Parent, Color)
@@ -742,8 +627,6 @@ function Library:CreateWindow(Config: {
 		AnimateTabOut(OldTab, OldTabButton, function()
 			Library.CurrentTab = NewTab
 			AnimateTabIn(NewTab, NewTabButton)
-			SearchBar.Text = ""
-			FilterSections("")
 			IsTabSwitching = false
 		end)
 	end
@@ -777,12 +660,6 @@ function Library:CreateWindow(Config: {
 			end
 		end
 
-		for SectionFrame, _ in next, AllSections do
-			SectionFrame.Title.TextColor3 = Color3.fromRGB(150, 150, 150)
-			if SectionFrame:FindFirstChild("Highlight") then
-				SectionFrame.Highlight:Destroy()
-			end
-		end
 	end
 
 	local function KeepFirst()
@@ -900,12 +777,6 @@ function Library:CreateWindow(Config: {
 			elseif Element.Type == "Button" and Element.UpdateColors then
 				Element:UpdateColors()
 			end
-		end
-		if SearchBar and SearchBar.Text ~= "" then
-			FilterSections(SearchBar.Text)
-		end
-		if IsMinimized ~= nil then
-			MinimizeButton.TextColor3 = Color
 		end
 	end
 
@@ -1114,10 +985,6 @@ function Library:CreateWindow(Config: {
 			Section.Parent = targetSide
 			Section.Title.Text = Name
 			Section.Title.Size = UDim2.new(0, Section.Title.TextBounds.X + 10, 0, 2)
-			AllSections[Section] = {
-				Name = Name,
-				TabParent = Tab,
-			}
 			if string.find(Section.Parent.Name:lower(), "left") then
 				Section.Parent.Padding.PaddingRight = UDim.new(0, 3)
 			elseif string.find(Section.Parent.Name:lower(), "right") then
@@ -1751,6 +1618,10 @@ function Library:CreateWindow(Config: {
 						description = "Normal",
 					},
 				}
+
+				if not StatusConfig[StatusLocal] then
+					StatusLocal = "normal"
+				end
 
 				local StatusIndicator = Toggle.StatusIndicator
 				StatusIndicator.ZIndex = Toggle.ZIndex + 1
@@ -4616,9 +4487,6 @@ function Library:CreateWindow(Config: {
 				for _, element in next, toDestroy do
 					element:Destroy()
 				end
-				if AllSections[Section] then
-					AllSections[Section] = nil
-				end
 				Section:Destroy()
 			end
 
@@ -4627,31 +4495,6 @@ function Library:CreateWindow(Config: {
 
 		return TabInit
 	end
-
-	local ClearButton = Topbar:FindFirstChild("SearchBar").ClearButton
-
-	table.insert(
-		Library.Connections,
-		Topbar.SearchBar.Changed:Connect(function(Property)
-			if Property == "Text" then
-				ClearButton.Visible = Topbar.SearchBar.Text ~= ""
-			end
-		end)
-	)
-
-	table.insert(
-		Library.Connections,
-		ClearButton.MouseButton1Click:Connect(function()
-			Topbar.SearchBar.Text = ""
-		end)
-	)
-
-	table.insert(
-		Library.Connections,
-		ClearButton.TouchTap:Connect(function()
-			Topbar.SearchBar.Text = ""
-		end)
-	)
 
 	function Library:Hud()
 		local HudInit = {}
@@ -4750,15 +4593,17 @@ function Library:CreateWindow(Config: {
 
 	local uitoggle = Config.Keybind
 	local uiVisible = true
-	table.insert(
-		Library.Connections,
-		UserInputService.InputBegan:Connect(function(input, gp)
-			if UserInputService:GetFocusedTextBox() == nil and input.KeyCode == uitoggle and not gp then
-				uiVisible = not uiVisible
-				Toggle(uiVisible)
-			end
-		end)
-	)
+	if not IsMobile then
+		table.insert(
+			Library.Connections,
+			UserInputService.InputBegan:Connect(function(input, gp)
+				if UserInputService:GetFocusedTextBox() == nil and input.KeyCode == uitoggle and not gp then
+					uiVisible = not uiVisible
+					Toggle(uiVisible)
+				end
+			end)
+		)
+	end
 	function Library:ChangeToggleKeybind(newKeybind)
 		uitoggle = newKeybind
 	end
@@ -5716,10 +5561,6 @@ function Library:Destroy()
 			if type(value) == "table" then
 				cleanupTable(value)
 			elseif typeof(value) == "RBXScriptConnection" then
-				pcall(function()
-					value:Disconnect()
-				end)
-			elseif type(value) == "function" and value.Disconnect then
 				pcall(function()
 					value:Disconnect()
 				end)

@@ -6,901 +6,800 @@ A reimagined customizable UI library for Roblox interfaces.
 
 ## Table of Contents
 
-- [Loading the Library](#loading-the-library)
-- [Library](#library)
-  - [CreateWindow](#createwindow)
-  - [Hud](#hud)
-  - [CreateKeybindViewer](#createkeybindviewer)
-  - [CreateToggleList](#createtogglelist)
-  - [SetWindowName](#setwindowname)
-  - [SetTheme](#settheme)
-  - [GetThemes](#getthemes)
-  - [Notify](#notify)
-  - [Destroy](#destroy)
-- [Window](#window)
-  - [CreateTab](#createtab)
-  - [ChangeColor](#changecolor)
-  - [Toggle](#toggle)
-  - [SetBackground](#setbackground)
-  - [SetFont](#setfont)
-  - [CreateGlow](#createglow)
-  - [CreateParticles](#createparticles)
-  - [Destroy (Window)](#destroy-window)
-- [Tab](#tab)
-  - [CreateSection](#createsection)
-- [Section](#section)
-  - [CreateLabel](#createlabel)
-  - [CreateButton](#createbutton)
-  - [CreateTextBox](#createtextbox)
-  - [CreateToggle](#createtoggle)
-  - [CreateSlider](#createslider)
-  - [CreateDropdown](#createdropdown)
-  - [CreateColorpicker](#createcolorpicker)
-  - [CreateDivider](#createdivider)
-- [Toggle Element](#toggle-element)
-  - [SetState](#setstate)
-  - [GetState](#getstate)
-  - [SetStatus](#setstatus)
-  - [SetInfo](#setinfo)
-  - [SetVisible](#setvisible)
-  - [CreateKeybind](#createkeybind)
-  - [GetKeybind](#getkeybind)
-- [Keybind Element](#keybind-element)
-- [Slider Element](#slider-element)
-- [Dropdown Element](#dropdown-element)
-- [ColorPicker Element](#colorpicker-element)
-- [Hud Element](#hud-element)
-- [Flags](#flags)
-- [ConfigManager](#configmanager)
-  - [Setup](#configmanager-setup)
-  - [Methods](#configmanager-methods)
-  - [Auto Config UI](#auto-config-ui)
-- [Full Example](#full-example)
+1. [Installation](#installation)
+2. [Quick Start](#quick-start)
+3. [Window](#window)
+4. [Tab & Section](#tab--section)
+5. [Elements](#elements)
+6. [HUD](#hud)
+7. [Notifications](#notifications)
+8. [Widgets](#widgets)
+9. [Config Manager](#config-manager)
+10. [Flags](#flags)
+11. [Themes](#themes)
+12. [UI Keybind](#ui-keybind)
+13. [Mobile](#mobile)
+14. [Utilities](#utilities)
+15. [Templates](#templates)
+16. [Common Patterns](#common-patterns)
+17. [Troubleshooting](#troubleshooting)
 
 ---
 
-## Loading the Library
+## Installation
 
+**LoadString**
 ```lua
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ornzora/Xclusive-UI/main/LoadString.lua"))()
 ```
+Cached in `getgenv().XclusiveUI` after the first load. Safe to call multiple times.
 
-To also load ConfigManager:
+**Loader**
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Ornzora/Xclusive-UI/main/Loader/Loader.lua"))()
+```
+Fetches `Games/<GameId>.lua`, falls back to `Games/Universal.lua`.
+
+---
+
+## Quick Start
 
 ```lua
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ornzora/Xclusive-UI/main/LoadString.lua"))()
-local ConfigManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ornzora/Xclusive-UI/main/Library/ConfigManager.lua"))()
-```
 
----
+local Window  = Library:CreateWindow({ WindowName = "My Script", Color = Color3.fromRGB(0, 162, 255) })
+local Section = Window:CreateTab("Main"):CreateSection("Features")
 
-## Library
+Section:CreateToggle("God Mode", false, function(state)
+    print("God Mode:", state)
+end)
 
-### CreateWindow
-
-Creates the main UI window.
-
-```lua
-local Window = Library:CreateWindow(Config, Parent)
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `Config` | table | Window configuration (see below) |
-| `Parent` | Instance | The Roblox instance to parent the UI to |
-
-**Config fields:**
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `WindowName` | string | required | Title displayed in the window header |
-| `Color` | Color3 | required | Accent color of the window |
-| `MinHeight` | number | optional | Minimum window height in pixels |
-| `MaxHeight` | number | optional | Maximum window height in pixels |
-| `InitialHeight` | number | optional | Starting height in pixels |
-| `MinWidth` | number | optional | Minimum window width in pixels |
-| `MaxWidth` | number | optional | Maximum window width in pixels |
-| `InitialWidth` | number | optional | Starting width in pixels |
-| `Keybind` | Enum.KeyCode | optional | Key to toggle window visibility |
-
-**Example:**
-
-```lua
-local Window = Library:CreateWindow({
-	WindowName = "Xclusive Hub",
-	Color = Color3.fromRGB(100, 60, 220),
-	MinHeight = 300,
-	MaxHeight = 700,
-	InitialHeight = 500,
-	MinWidth = 400,
-	MaxWidth = 800,
-	InitialWidth = 550,
-	Keybind = Enum.KeyCode.RightShift
-}, game.CoreGui)
-```
-
----
-
-### Hud
-
-Creates a HUD overlay — a single draggable text block that renders above the game world.
-
-```lua
-local Hud = Library:Hud()
-```
-
-Use `\n` to separate multiple lines of information:
-
-```lua
-Hud:SetText("Speed: " .. speed .. "\nHealth: " .. health)
-```
-
-See [Hud Element](#hud-element) for all available methods.
-
----
-
-### CreateKeybindViewer
-
-Creates a floating keybind reference panel.
-
-```lua
-local KeybindViewer = Library:CreateKeybindViewer(Config)
-```
-
----
-
-### CreateToggleList
-
-Creates a floating toggle list panel.
-
-```lua
-local ToggleList = Library:CreateToggleList(Config)
-```
-
----
-
-### SetWindowName
-
-Updates the window title text at runtime.
-
-```lua
-Library:SetWindowName("New Title")
-```
-
----
-
-### SetTheme
-
-Applies a built-in color theme by name.
-
-```lua
-Library:SetTheme(ThemeName)
-```
-
----
-
-### GetThemes
-
-Returns a table of available theme names.
-
-```lua
-local themes = Library:GetThemes()
-```
-
----
-
-### Notify
-
-Sends a toast notification.
-
-```lua
-Library:Notify(title, content, duration)
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `title` | string | Notification title |
-| `content` | string | Notification body text |
-| `duration` | number | Seconds before the notification disappears |
-
-**Example:**
-
-```lua
-Library:Notify("Success", "Config saved!", 5)
-```
-
----
-
-### Destroy
-
-Destroys the entire UI and cleans up all connections.
-
-```lua
-Library:Destroy()
+Library:Notify("Ready", "Loaded successfully!", 4)
 ```
 
 ---
 
 ## Window
 
-Returned by `Library:CreateWindow()`.
+### `Library:CreateWindow(Config) -> Window`
 
-### CreateTab
+| Key | Type | Default |
+|-----|------|---------|
+| `WindowName` | `string` | `"Developer Mode"` |
+| `Color` | `Color3` | `Color3.fromRGB(255, 255, 255)` |
+| `Keybind` | `Enum.KeyCode` | `Enum.KeyCode.F3` |
+| `InitialWidth` | `number` | `500` |
+| `InitialHeight` | `number` | `400` |
+| `MinWidth` | `number` | `300` |
+| `MaxWidth` | `number` | `800` |
+| `MinHeight` | `number` | `100` |
+| `MaxHeight` | `number` | `600` |
 
-Creates a new tab in the window.
+### Methods
 
-```lua
-local Tab = Window:CreateTab(Name)
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `Name` | string | Label shown on the tab button |
-
-**Example:**
-
-```lua
-local MainTab = Window:CreateTab("Main")
-local SettingsTab = Window:CreateTab("Settings")
-```
+| Method | Description |
+|--------|-------------|
+| `Window:CreateTab(name)` | Creates a tab. |
+| `Window:ChangeColor(color)` | Changes accent color globally. |
+| `Window:Toggle(bool)` | Show or hide the window. |
+| `Window:SetBackground(imageId)` | Sets background image. |
+| `Window:SetBackgroundColor(color)` | Sets background tint. |
+| `Window:SetBackgroundTransparency(t)` | Sets background transparency. |
+| `Window:SetTileOffset(x, y)` | Sets tile offset. |
+| `Window:SetTileScale(x, y)` | Sets tile scale. |
+| `Window:SetFont(font)` | Changes window font. |
+| `Window:CreateGlow(bool, config?)` | Toggles UIStroke glow. |
+| `Window:CreateParticles(bool, config?)` | Toggles particle effects. |
+| `Window:Notify(title, content, duration?)` | Sends a notification. |
+| `Window:Destroy()` | Destroys the window. |
 
 ---
 
-### ChangeColor
-
-Changes the window accent color at runtime.
+## Tab & Section
 
 ```lua
-Window:ChangeColor(Color)
+local Tab     = Window:CreateTab("Combat")
+local Section = Tab:CreateSection("Aimbot")
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `Color` | Color3 | New accent color |
+### Section Methods
+
+| Method | Description |
+|--------|-------------|
+| `Section:SetVisible(bool)` | Show or hide the section. |
+| `Section:IsVisible()` | Returns visibility state. |
+| `Section:ToggleVisibility()` | Flips visibility. |
+| `Section:Destroy()` | Destroys the section. |
+
+All elements also have `SetVisible`, `IsVisible`, and `ToggleVisibility`.
+
+---
+
+## Elements
+
+### Button
+
+```lua
+Section:CreateButton(name, callback, wrapText?) -> Element
+```
+
+```lua
+Section:CreateButton("Kill All", function()
+    -- ...
+end)
+```
+
+| Method | Description |
+|--------|-------------|
+| `Button:UpdateColors()` | Refreshes color. |
+| `Button:SetWrapText(bool)` | Toggle text wrapping. |
+| `Button:CreateKeybind(bind, callback)` | Attach a hotkey. |
+| `Button:GetKeybind()` | Returns the keybind element. |
+| `Button:Destroy()` | Removes the button. |
 
 ---
 
 ### Toggle
 
-Shows or hides the window.
-
 ```lua
-Window:Toggle(State)
+Section:CreateToggle(name, default?, callback, wrapText?, flag?, status?) -> Element
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `State` | boolean | `true` to show, `false` to hide |
+`status`: `"normal"` `"buggy"` `"dangerous"`
+
+```lua
+Section:CreateToggle("ESP", false, function(state)
+    setESP(state)
+end, false, "esp", "normal")
+```
+
+| Method | Description |
+|--------|-------------|
+| `Toggle:SetState(bool)` | Set state, fires callback. |
+| `Toggle:GetState()` | Returns current state. |
+| `Toggle:UpdateColors()` | Refreshes colors. |
+| `Toggle:CreateKeybind(bind, callback, mode?)` | Attach hotkey. Mode: `"toggle"` or `"hold"`. |
+| `Toggle:GetKeybind()` | Returns keybind element. |
+| `Toggle:ClosePallete()` | Closes attached color picker. |
+| `Toggle:Destroy()` | Removes the toggle. |
 
 ---
 
-### SetBackground
-
-Sets the window background image.
+### Slider
 
 ```lua
-Window:SetBackground(ImageId)
+Section:CreateSlider(name, min, max, default?, precise?, callback, wrapText?, suffix?, flag?) -> Element
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `ImageId` | string | Roblox asset ID (e.g. `"rbxassetid://12345678"`) |
+```lua
+Section:CreateSlider("FOV", 0, 360, 90, true, function(v)
+    workspace.CurrentCamera.FieldOfView = v
+end, false, "°", "fov")
+```
+
+| Method | Description |
+|--------|-------------|
+| `Slider:SetValue(value)` | Set value, fires callback. |
+| `Slider:GetValue()` | Returns current value. |
+| `Slider:UpdateColors()` | Refreshes colors. |
 
 ---
 
-### SetFont
-
-Changes the font used throughout the window.
+### Dropdown / MultiDropdown
 
 ```lua
-Window:SetFont(Font)
+Section:CreateDropdown(name, options, callback, initial?, multi?, wrapText?, keepRemoved?, flag?) -> Element
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `Font` | Enum.Font | Roblox font enum value |
+Has a built-in search bar that filters options in real time.
+
+```lua
+-- Single
+Section:CreateDropdown("Hitbox", { "Head", "Torso", "HRP" }, function(v)
+    setHitbox(v)
+end, "Head", false, false, false, "hitbox")
+
+-- Multi
+Section:CreateDropdown("Items", { "Sword", "Shield", "Potion" }, function(selected)
+    -- selected = { Sword = true, ... }
+end, nil, true)
+```
+
+| Method | Description |
+|--------|-------------|
+| `Dropdown:SetOption(value)` | Set selection, fires callback. |
+| `Dropdown:AddOption(name)` | Add an option. |
+| `Dropdown:RemoveOption(name)` | Remove an option. |
+| `Dropdown:ClearOptions()` | Remove all options. |
+| `Dropdown:ChangeOptions(table, initial?)` | Replace all options. |
 
 ---
 
-### CreateGlow
-
-Enables or disables a glow effect around the window.
+### ColorPicker
 
 ```lua
-Window:CreateGlow(enableGlow, glowConfig)
+Section:CreateColorpicker(name, callback, isAccent?, wrapText?, attachTo?) -> Element
 ```
+
+```lua
+-- Standalone
+local cp = Section:CreateColorpicker("Color", function(color, alpha) end)
+
+-- Attached to a Toggle (renders as a dot on the toggle row)
+local t = Section:CreateToggle("ESP", false, function(s) end)
+Section:CreateColorpicker("ESP Color", function(color) end, false, false, t)
+```
+
+| Method | Description |
+|--------|-------------|
+| `CP:UpdateColor(color, alpha?)` | Update programmatically. Does not fire callback. |
+| `CP:GetValue()` | Returns `Color3, transparency`. |
+| `CP:GetColor()` | Returns `Color3`. |
+| `CP:GetTransparency()` | Returns transparency `0-1`. |
+| `CP:SetTransparency(t)` | Set transparency. |
+| `CP:IsRainbowEnabled()` | Returns rainbow state. |
+| `CP:SetRainbow(bool)` | Enable/disable rainbow mode. |
+| `CP:ClosePallete()` | Closes the picker popup. |
+| `CP:Destroy()` | Destroys the picker. |
 
 ---
 
-### CreateParticles
-
-Enables or disables decorative particles on the window.
+### TextBox
 
 ```lua
-Window:CreateParticles(enableParticles)
+Section:CreateTextBox(name, default?, placeholder?, callback, wrapText?, flag?) -> Element
 ```
+
+```lua
+Section:CreateTextBox("Target", "", "Enter name...", function(text)
+    targetPlayer = text
+end, false, "target")
+```
+
+| Method | Description |
+|--------|-------------|
+| `TB:SetValue(text)` | Set text. |
+| `TB:GetValue()` | Returns current text. |
+| `TB:ToggleInput(bool)` | Enable/disable input. |
+| `TB:UpdateColors()` | Refreshes colors. |
 
 ---
 
-### Destroy (Window)
-
-Destroys this window instance and cleans up its connections.
+### Label
 
 ```lua
-Window:Destroy()
+Section:CreateLabel(name, wrapText?) -> Element
 ```
+
+```lua
+local lbl = Section:CreateLabel("Status: Idle")
+lbl:UpdateText("Status: Active")
+```
+
+| Method | Description |
+|--------|-------------|
+| `Label:UpdateText(text)` | Change displayed text. |
+| `Label:SetWrapText(bool)` | Toggle text wrap. |
+| `Label:Destroy()` | Removes the label. |
 
 ---
 
-## Tab
-
-Returned by `Window:CreateTab()`.
-
-### CreateSection
-
-Creates a content section within the tab.
+### Keybind
 
 ```lua
-local Section = Tab:CreateSection(Name, Side)
+-- On a Button
+button:CreateKeybind(Enum.KeyCode.V, function() end)
+
+-- On a Toggle
+toggle:CreateKeybind(Enum.KeyCode.G, function(state) end, "toggle")
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `Name` | string | Section header label |
-| `Side` | string? | Optional. `"Left"` or `"Right"` for two-column layouts |
-
-**Example:**
-
-```lua
-local MainSection = Tab:CreateSection("Main")
-local LeftSection  = Tab:CreateSection("Left Panel",  "Left")
-local RightSection = Tab:CreateSection("Right Panel", "Right")
-```
+Mode: `"toggle"` flips state each press. `"hold"` is active only while held.
 
 ---
 
-## Section
-
-Returned by `Tab:CreateSection()`. All element creators use **positional arguments** (not config tables).
-
-### CreateLabel
-
-Creates a static text label.
-
-```lua
-local Label = Section:CreateLabel(Name, WrapText)
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `Name` | string | Label text |
-| `WrapText` | boolean? | Whether text wraps to multiple lines |
-
-**Label methods:**
-
-```lua
-Label:UpdateText(NewText)
-```
-
----
-
-### CreateButton
-
-Creates a clickable button.
-
-```lua
-local Button = Section:CreateButton(Name, Callback, WrapText)
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `Name` | string | Button label |
-| `Callback` | function | Called when the button is clicked |
-| `WrapText` | boolean? | Whether text wraps |
-
-**Example:**
-
-```lua
-Section:CreateButton("Reset Values", function()
-	print("Reset clicked")
-end)
-```
-
----
-
-### CreateTextBox
-
-Creates an input text field.
-
-```lua
-local TextBox = Section:CreateTextBox(Name, PlaceHolder, NumbersOnly, Callback, WrapText)
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `Name` | string | Label above the input |
-| `PlaceHolder` | string | Placeholder text inside the field |
-| `NumbersOnly` | boolean | When `true`, only numeric input is accepted |
-| `Callback` | function(Value: string) | Called when the user submits input |
-| `WrapText` | boolean? | Whether the label text wraps |
-
-**TextBox methods:**
-
-```lua
-TextBox:GetValue()         -- returns current string value
-TextBox:SetValue(Value)    -- sets the text programmatically
-```
-
-**Example:**
-
-```lua
-local NameBox = Section:CreateTextBox("Player Name", "Enter name...", false, function(Value)
-	print("Submitted:", Value)
-end)
-```
-
----
-
-### CreateToggle
-
-Creates an on/off toggle switch.
-
-```lua
-local Toggle = Section:CreateToggle(Name, Default, Callback, Status, Info, WrapText, Flag)
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `Name` | string | Toggle label |
-| `Default` | boolean? | Initial state (`true` = on) |
-| `Callback` | function(State: boolean) | Called when the toggle changes |
-| `Status` | string? | Optional status text displayed next to the toggle |
-| `Info` | string? | Optional tooltip / info text |
-| `WrapText` | boolean? | Whether the label wraps |
-| `Flag` | string? | Unique key for config saving (see [Flags](#flags)) |
-
-See [Toggle Element](#toggle-element) for all available methods.
-
-**Example:**
-
-```lua
-local SpeedToggle = Section:CreateToggle("Speed Hack", false, function(State)
-	print("Speed hack:", State)
-end, nil, "Modifies walk speed", false, "SpeedHack")
-```
-
----
-
-### CreateSlider
-
-Creates a value slider.
-
-```lua
-local Slider = Section:CreateSlider(Name, Min, Max, Default, Precise, Callback, WrapText, Suffix, Flag)
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `Name` | string | Slider label |
-| `Min` | number | Minimum value |
-| `Max` | number | Maximum value |
-| `Default` | number? | Initial value |
-| `Precise` | boolean? | When `false`, values are integer steps; when `true`, allows decimals |
-| `Callback` | function(Value: number) | Called when the value changes |
-| `WrapText` | boolean? | Whether the label wraps |
-| `Suffix` | string? | Unit suffix displayed after the value (e.g. `"x"`, `"%"`) |
-| `Flag` | string? | Unique key for config saving (see [Flags](#flags)) |
-
-See [Slider Element](#slider-element) for all available methods.
-
-**Example:**
-
-```lua
-local SpeedSlider = Section:CreateSlider("Walk Speed", 0, 100, 16, false, function(Value)
-	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
-end, false, " studs/s", "WalkSpeed")
-```
-
----
-
-### CreateDropdown
-
-Creates a selection dropdown.
-
-```lua
-local Dropdown = Section:CreateDropdown(Name, OptionTable, Callback, InitialValue, Multi, WrapText, KeepRemoved, Flag)
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `Name` | string | Dropdown label |
-| `OptionTable` | {string} | List of selectable options |
-| `Callback` | function(Value: any) | Called when selection changes |
-| `InitialValue` | any? | Pre-selected value on creation |
-| `Multi` | boolean? | When `true`, allows selecting multiple options |
-| `WrapText` | boolean? | Whether the label wraps |
-| `KeepRemoved` | boolean? | When `true`, removed options are remembered |
-| `Flag` | string? | Unique key for config saving (see [Flags](#flags)) |
-
-See [Dropdown Element](#dropdown-element) for all available methods.
-
-**Example:**
-
-```lua
-local TeamDropdown = Section:CreateDropdown("Select Team", {"Red", "Blue", "Green"}, function(Value)
-	print("Selected:", Value)
-end, "Red")
-```
-
----
-
-### CreateColorpicker
-
-Creates a color picker, optionally attached to a toggle element.
-
-```lua
-local ColorPicker = Section:CreateColorpicker(Name, Callback, IsAccentColorpicker, WrapText, AttachToToggle)
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `Name` | string | Label for the color picker |
-| `Callback` | function(Color: Color3, Transparency: number?) | Called when color or transparency changes |
-| `IsAccentColorpicker` | boolean? | When `true`, changing this color updates the window accent |
-| `WrapText` | boolean? | Whether the label wraps |
-| `AttachToToggle` | Element? | A toggle element to attach this picker to |
-
-To attach a color picker to a toggle, pass the toggle as the last argument:
-
-```lua
-local MyToggle = Section:CreateToggle("Enable Effect", false, function(State) end)
-local MyColor  = Section:CreateColorpicker("Effect Color", function(Color, Transparency)
-	print(Color, Transparency)
-end, nil, nil, MyToggle)
-```
-
-See [ColorPicker Element](#colorpicker-element) for all available methods.
-
----
-
-### CreateDivider
-
-Inserts a horizontal divider line between elements.
+### Divider
 
 ```lua
 Section:CreateDivider()
 ```
 
+| Method | Description |
+|--------|-------------|
+| `Divider:SetColor(color)` | Change line color. |
+| `Divider:Destroy()` | Removes the divider. |
+
 ---
 
-## Toggle Element
+## HUD
 
-Returned by `Section:CreateToggle()`.
-
-### SetState
-
-Sets the toggle on or off programmatically.
+Floating text overlay independent of the main window.
 
 ```lua
-Toggle:SetState(State)
+local hud = Library:Hud()
+hud:SetText("FPS: 60"):SetTextColor(Color3.fromRGB(0, 255, 128)):SetTextSize(14)
 ```
 
-### GetState
+All methods are chainable.
 
-Returns the current state of the toggle.
+| Method | Description |
+|--------|-------------|
+| `Hud:SetText(text)` | Set text. |
+| `Hud:GetText()` | Returns text. |
+| `Hud:SetVisibility(bool)` | Show/hide. |
+| `Hud:IsVisible()` | Returns visibility. |
+| `Hud:SetTextColor(color)` | Set text color. |
+| `Hud:SetTextSize(size)` | Set text size. |
+| `Hud:SetFont(font)` | Set font. |
+| `Hud:SetPadding(right, bottom, left, top)` | Set edge padding. |
+| `Hud:SetDraggable(bool)` | Enable/disable dragging. |
+| `Hud:SetPosition(udim2)` | Move the HUD. |
+| `Hud:GetPosition()` | Returns position. |
+
+---
+
+## Notifications
+
+Toast popups stacked in the bottom-right corner.
 
 ```lua
-local state = Toggle:GetState()  -- returns boolean
+Library:Notify(title, content, duration?)
+Window:Notify(title, content, duration?)
 ```
 
-### SetStatus
-
-Updates the status text displayed alongside the toggle.
-
-```lua
-Toggle:SetStatus(NewStatus)
-```
-
-### SetInfo
-
-Updates the info/tooltip text.
+| Parameter | Type | Default |
+|-----------|------|---------|
+| `title` | `string` | required |
+| `content` | `string` | required |
+| `duration` | `number` | `15` |
 
 ```lua
-Toggle:SetInfo(NewInfo)
-```
-
-### SetVisible
-
-Shows or hides the toggle element.
-
-```lua
-Toggle:SetVisible(Visible)
-```
-
-### CreateKeybind
-
-Attaches a keybind to this toggle. Returns a [Keybind Element](#keybind-element).
-
-```lua
-local Keybind = Toggle:CreateKeybind(Bind, KeybindCallback, DefaultMode)
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `Bind` | Enum.KeyCode | Default key |
-| `KeybindCallback` | function? | Optional extra callback when the key is pressed |
-| `DefaultMode` | string? | `"Toggle"` or `"Hold"` |
-
-**Example:**
-
-```lua
-local SpeedToggle = Section:CreateToggle("Speed Hack", false, function(State)
-	-- enable/disable speed
-end)
-
-SpeedToggle:CreateKeybind(Enum.KeyCode.X, nil, "Toggle")
-```
-
-### GetKeybind
-
-Returns the attached [Keybind Element](#keybind-element), or `nil` if none.
-
-```lua
-local Keybind = Toggle:GetKeybind()
+Library:Notify("Loaded", "Script ready.", 4)
+Library:Notify("Warning", "Unstable feature enabled.", 8)
 ```
 
 ---
 
-## Keybind Element
+## Widgets
 
-Returned by `Toggle:CreateKeybind()`.
+Both widgets are PC only. On mobile they return a silent no-op object.
+
+### KeybindViewer
 
 ```lua
-Keybind:SetBind(Key)    -- Enum.KeyCode
-Keybind:GetBind()       -- returns Enum.KeyCode
-Keybind:SetMode(Mode)   -- "Toggle" or "Hold"
-Keybind:GetMode()       -- returns current mode string
+local kbv = Library:CreateKeybindViewer({
+    Visible          = true,
+    Position         = UDim2.new(0, 10, 0, 100),
+    UpdateInterval   = 0,
+    ShowToggleStates = true,
+    ShowOnlyActive   = true,
+    Draggable        = true,
+})
 ```
+
+| Method | Description |
+|--------|-------------|
+| `KBV:SetVisible(bool)` | Show/hide. |
+| `KBV:Toggle()` | Flip visibility. |
+| `KBV:SetPosition(udim2)` | Move. |
+| `KBV:ForceUpdate()` | Force refresh. |
+| `KBV:SetTitle(text)` | Change header. |
+| `KBV:GetKeybindCount()` | Returns entry count. |
+| `KBV:Destroy()` | Removes the widget. |
+
+### ToggleList
+
+```lua
+local tl = Library:CreateToggleList({
+    Visible         = true,
+    Position        = UDim2.new(0, 220, 0, 100),
+    UpdateInterval  = 0,
+    ShowOnlyEnabled = true,
+    ShowStatus      = true,
+    Draggable       = true,
+    Title           = "Enabled Features",
+})
+```
+
+| Method | Description |
+|--------|-------------|
+| `TL:SetVisible(bool)` | Show/hide. |
+| `TL:Toggle()` | Flip visibility. |
+| `TL:SetPosition(udim2)` | Move. |
+| `TL:ForceUpdate()` | Force refresh. |
+| `TL:SetTitle(text)` | Change header. |
+| `TL:GetEnabledCount()` | Returns enabled count. |
+| `TL:Destroy()` | Removes the widget. |
 
 ---
 
-## Slider Element
+## Config Manager
 
-Returned by `Section:CreateSlider()`.
-
-```lua
-Slider:SetValue(Value)  -- sets the slider to a number
-Slider:GetValue()       -- returns the current number
-```
-
----
-
-## Dropdown Element
-
-Returned by `Section:CreateDropdown()`.
+Separate module. Saves and loads element states via executor filesystem APIs.
 
 ```lua
-Dropdown:GetOption()                              -- returns selected value (or table if Multi)
-Dropdown:SetOption(Value)                         -- selects a value programmatically
-Dropdown:ChangeOptions(NewOptionTable, InitialValue?)  -- replaces the entire options list
-Dropdown:AddOption(OptionName, SelectImmediately?)     -- adds a single option
-Dropdown:RemoveOption(OptionName)                      -- removes a single option
-Dropdown:ClearOptions()                                -- removes all options
+local ConfigManager = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/Ornzora/Xclusive-UI/main/Library/ConfigManager.lua"
+))()
+
+ConfigManager:SetLibrary(Library)
+ConfigManager:SetWindow(Window)
+ConfigManager:BuildConfigSection(ConfigTab)  -- takes a Tab, creates the section inside
 ```
 
----
+| Method | Description |
+|--------|-------------|
+| `ConfigManager:SetLibrary(lib)` | Required before `BuildConfigSection`. |
+| `ConfigManager:SetWindow(win)` | Required before `BuildConfigSection`. |
+| `ConfigManager:BuildConfigSection(tab)` | Builds full config UI inside the tab. |
+| `ConfigManager:Save(name)` | Save current state. Returns `ok, err`. |
+| `ConfigManager:Load(name)` | Load a config. Returns `ok, err`. |
+| `ConfigManager:DeleteConfig(name)` | Delete a config file. |
+| `ConfigManager:RefreshConfigList()` | Returns list of saved configs. |
+| `ConfigManager:SetIgnoreIndexes(list)` | Exclude flags from save/load. |
+| `ConfigManager:LoadAutoloadConfig()` | Runs autoload: place -> game -> global. |
 
-## ColorPicker Element
+**Supported element types:** Toggle, Slider, Dropdown, MultiDropdown, ColorPicker, AttachedColorPicker, TextBox, Button.
 
-Returned by `Section:CreateColorpicker()`.
-
-```lua
-ColorPicker:GetValue()           -- returns Color3, transparency
-ColorPicker:GetColor()           -- returns Color3
-ColorPicker:GetTransparency()    -- returns number (0–1)
-ColorPicker:SetTransparency(t)   -- sets transparency
-ColorPicker:SetRainbow(State)    -- enables/disables rainbow cycling
-ColorPicker:ClosePallete()       -- closes the color palette UI
-ColorPicker:SetVisible(Visible)  -- shows/hides the picker
-```
-
----
-
-## Hud Element
-
-Returned by `Library:Hud()`. The HUD is a single draggable text block — use `\n` to display multiple values.
-
-```lua
-Hud:SetText(text)           -- sets the full HUD text
-Hud:GetText()               -- returns current text
-Hud:SetVisibility(bool)     -- shows or hides the HUD
-Hud:IsVisible()             -- returns boolean
-Hud:SetTextColor(Color3)    -- changes the text color
-Hud:SetTextSize(size)       -- changes the text size
-Hud:SetFont(Enum.Font)      -- changes the font
-Hud:SetPadding(right, bottom, left, top)  -- sets padding in pixels
-Hud:SetDraggable(bool)      -- enables/disables drag
-Hud:SetPosition(UDim2)      -- moves the HUD
-Hud:GetPosition()           -- returns current UDim2 position
-```
-
-**Example:**
-
-```lua
-local Hud = Library:Hud()
-Hud:SetText("Speed: 50\nHealth: 100\nCoins: 250")
-Hud:SetTextColor(Color3.fromRGB(255, 255, 255))
-Hud:SetTextSize(14)
-Hud:SetVisibility(true)
-```
+Requires executor filesystem support: `readfile`, `writefile`, `isfile`.
 
 ---
 
 ## Flags
 
-Flags are string keys that let ConfigManager track element values for save/load. Assign a unique flag to each element you want persisted:
+Elements with a `flag` parameter register their value in `Library.flags[flagName]`.
 
 ```lua
-local Toggle = Section:CreateToggle("My Feature", false, function(State) end,
-	nil, nil, false, "MyFeatureFlag")
+Section:CreateToggle("ESP", false, function(s) end, false, "esp")
+Section:CreateSlider("Speed", 16, 200, 16, true, function(v) end, false, nil, "speed")
 
-local Slider = Section:CreateSlider("Speed", 0, 100, 16, false, function(Value) end,
-	false, nil, "SpeedFlag")
-
-local Dropdown = Section:CreateDropdown("Team", {"Red", "Blue"}, function(Value) end,
-	nil, false, false, false, "TeamFlag")
+-- Read from anywhere:
+if Library.flags["esp"] then renderESP() end
+print(Library.flags["speed"])
 ```
 
-Elements without a flag are still functional but will not be saved or loaded by ConfigManager.
+Flags persist across re-loads via `getgenv().XclusiveUI`.
 
 ---
 
-## ConfigManager
-
-ConfigManager saves and loads element states to the executor's file system. Elements must have a [Flag](#flags) assigned to participate in save/load.
-
-### ConfigManager Setup
+## Themes
 
 ```lua
-local ConfigManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ornzora/Xclusive-UI/main/Library/ConfigManager.lua"))()
-
-ConfigManager:SetLibrary(Library)   -- required
-ConfigManager:SetWindow(Window)     -- required for notifications
-ConfigManager:SetFolder("MyScript") -- optional, default is "XclusiveUI"
-```
-
-### ConfigManager Methods
-
-```lua
--- Save current element states to a named config file
-ConfigManager:Save(Name: string)
-
--- Load a named config file and restore element states
-ConfigManager:Load(Name: string)
-
--- Delete a saved config file
-ConfigManager:DeleteConfig(Name: string)
-
--- Returns a list of saved config names
-ConfigManager:RefreshConfigList()
-
--- Exclude specific element flags from save/load
-ConfigManager:SetIgnoreIndexes(List: {string})
-
--- Autoload methods — set which config loads automatically
-ConfigManager:SetPlaceAutoloadConfig(ConfigName)    -- for current Place ID
-ConfigManager:SetGameAutoloadConfig(ConfigName)     -- for current Game ID
-ConfigManager:SetGlobalAutoloadConfig(ConfigName)   -- global fallback
-
--- Get the current autoload config name for each scope
-ConfigManager:GetPlaceAutoloadConfig()
-ConfigManager:GetGameAutoloadConfig()
-ConfigManager:GetGlobalAutoloadConfig()
-
--- Load whichever autoload applies (place > game > global priority)
-ConfigManager:LoadAutoloadConfig()
-```
-
-### Auto Config UI
-
-`BuildConfigSection` automatically creates a full config management UI inside any tab section:
-
-```lua
-ConfigManager:BuildConfigSection(Tab)
-```
-
-This adds buttons for: Create, Load, Overwrite, Delete, Refresh, Set Place Autoload, Set Game Autoload, and Set Global Autoload — plus labels showing the current autoload status.
-
-**Example:**
-
-```lua
-local SettingsTab = Window:CreateTab("Settings")
-ConfigManager:BuildConfigSection(SettingsTab)
-ConfigManager:LoadAutoloadConfig()
+Library:GetThemes()           -- returns table of built-in theme configs
+Library:SetTheme("Midnight")  -- apply a named theme
+Window:ChangeColor(color)     -- change accent color, propagates to all elements
 ```
 
 ---
 
-## Full Example
+## UI Keybind
+
+Default keybind is `F3`. Press to hide/show all windows.
 
 ```lua
--- Load library
+Library:ChangeToggleKeybind(Enum.KeyCode.Insert)  -- change at runtime
+Window:Toggle(false)  -- hide
+Window:Toggle(true)   -- show
+```
+
+---
+
+## Mobile
+
+Detected via `UserInputService.TouchEnabled`. Stored in `Library.IsMobile`.
+
+- F3 keybind is disabled.
+- `KeybindViewer` and `ToggleList` return no-op dummies.
+- All touch interactions work on Sliders, Dropdowns, Buttons, and ColorPickers.
+- A ReopenButton is rendered for restoring a hidden UI.
+
+```lua
+if Library.IsMobile then
+    Section:CreateButton("Toggle UI", function()
+        Window:Toggle(false)
+    end)
+end
+```
+
+---
+
+## Utilities
+
+```lua
+Library:SetWindowName("Script v2.0")  -- update title bar text
+Library:GetTextBounds(text, font, size)  -- returns Vector2 pixel size
+Library:ChangeToggleKeybind(keyCode)  -- change hide/show keybind
+Library:Destroy()  -- destroy all UI and clear cache
+```
+
+Safe re-execution pattern:
+```lua
+if getgenv().XclusiveUI then
+    getgenv().XclusiveUI:Destroy()
+end
+local Library = loadstring(game:HttpGet("...LoadString.lua"))()
+```
+
+---
+
+## Templates
+
+### Minimal
+
+```lua
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ornzora/Xclusive-UI/main/LoadString.lua"))()
-local ConfigManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ornzora/Xclusive-UI/main/Library/ConfigManager.lua"))()
 
--- Create window
+local Window  = Library:CreateWindow({ WindowName = "Quick Script", Color = Color3.fromRGB(0, 162, 255) })
+local Section = Window:CreateTab("Main"):CreateSection("Features")
+
+Section:CreateToggle("God Mode", false, function(on) end, false, "godmode")
+Section:CreateSlider("Speed", 16, 200, 16, true, function(v)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v
+end, false, nil, "speed")
+Section:CreateButton("Teleport to Spawn", function()
+    game.Players.LocalPlayer.Character:MoveTo(Vector3.new(0, 5, 0))
+end)
+
+Library:Notify("Quick Script", "Loaded!", 3)
+```
+
+---
+
+### Advanced
+
+```lua
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ornzora/Xclusive-UI/main/LoadString.lua"))()
+
 local Window = Library:CreateWindow({
-	WindowName = "Xclusive Hub",
-	Color = Color3.fromRGB(100, 60, 220),
-	MinHeight = 300,
-	MaxHeight = 700,
-	InitialHeight = 500,
-	MinWidth = 400,
-	MaxWidth = 800,
-	InitialWidth = 550,
-	Keybind = Enum.KeyCode.RightShift
-}, game.CoreGui)
+    WindowName = "Advanced Script",
+    Color      = Color3.fromRGB(255, 85, 85),
+    Keybind    = Enum.KeyCode.F4,
+})
 
--- Create tabs
-local MainTab     = Window:CreateTab("Main")
-local VisualTab   = Window:CreateTab("Visuals")
+-- Combat
+local CombatTab = Window:CreateTab("Combat")
+local AimSec    = CombatTab:CreateSection("Aimbot")
+
+local aimbot = AimSec:CreateToggle("Aimbot", false, function(s) end, false, "aimbot")
+aimbot:CreateKeybind(Enum.KeyCode.CapsLock, function(s) end, "toggle")
+
+AimSec:CreateSlider("Smoothness", 0, 100, 40, true, function(v) end, false, "%", "smooth")
+AimSec:CreateSlider("FOV", 10, 360, 120, true, function(v) end, false, "°", "fov")
+AimSec:CreateDropdown("Hitbox", { "Head", "Torso", "HRP" }, function(v) end, "Head", false, false, false, "hitbox")
+CombatTab:CreateSection("Silent Aim"):CreateToggle("Silent Aim", false, function(s) end, false, "silent", "dangerous")
+
+-- ESP
+local ESPTab    = Window:CreateTab("ESP")
+local PlayerSec = ESPTab:CreateSection("Players")
+
+local espToggle = PlayerSec:CreateToggle("Player ESP", false, function(s) end, false, "esp")
+PlayerSec:CreateColorpicker("Box Color",  function(c, a) end, false, false, espToggle)
+PlayerSec:CreateColorpicker("Name Color", function(c) end, false, false, espToggle)
+PlayerSec:CreateSlider("Max Distance", 100, 3000, 1000, true, function(v) end, false, "studs", "esp_dist")
+PlayerSec:CreateDivider()
+PlayerSec:CreateToggle("Show Names",    true, function(s) end, false, "esp_names")
+PlayerSec:CreateToggle("Show Health",   true, function(s) end, false, "esp_health")
+PlayerSec:CreateToggle("Show Skeleton", false, function(s) end, false, "esp_skel", "buggy")
+
+-- Movement
+local MovTab = Window:CreateTab("Movement")
+local MovSec = MovTab:CreateSection("Speed & Fly")
+
+local fly = MovSec:CreateToggle("Fly", false, function(s) end, false, "fly")
+fly:CreateKeybind(Enum.KeyCode.G, function(s) end, "toggle")
+MovSec:CreateSlider("Walk Speed", 16, 300, 16, true, function(v)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v
+end, false, nil, "walkspeed")
+MovSec:CreateSlider("Jump Power", 50, 500, 50, true, function(v)
+    game.Players.LocalPlayer.Character.Humanoid.JumpPower = v
+end, false, nil, "jumppower")
+MovTab:CreateSection("Misc"):CreateToggle("Noclip", false, function(s) end, false, "noclip", "buggy")
+
+-- Settings
 local SettingsTab = Window:CreateTab("Settings")
+SettingsTab:CreateSection("Theme"):CreateColorpicker("Accent Color", function() end, true)
 
--- Main tab
-local PlayerSection = MainTab:CreateSection("Player")
-
-local SpeedToggle = PlayerSection:CreateToggle("Speed Hack", false, function(State)
-	local char = game.Players.LocalPlayer.Character
-	if char then
-		char.Humanoid.WalkSpeed = State and 50 or 16
-	end
-end, nil, "Increases walk speed", false, "SpeedHack")
-
-SpeedToggle:CreateKeybind(Enum.KeyCode.X, nil, "Toggle")
-
-local SpeedSlider = PlayerSection:CreateSlider("Walk Speed", 0, 200, 16, false, function(Value)
-	local char = game.Players.LocalPlayer.Character
-	if char then
-		char.Humanoid.WalkSpeed = Value
-	end
-end, false, " studs/s", "WalkSpeed")
-
-PlayerSection:CreateDivider()
-
-local TeamDropdown = PlayerSection:CreateDropdown("Select Team", {"Red", "Blue", "Green"}, function(Value)
-	print("Team selected:", Value)
-end, "Red", false, false, false, "TeamSelection")
-
-local NameBox = PlayerSection:CreateTextBox("Player Name", "Enter name...", false, function(Value)
-	print("Name set to:", Value)
-end)
-
-PlayerSection:CreateButton("Reset Character", function()
-	game.Players.LocalPlayer.Character:BreakJoints()
-end)
-
--- Visuals tab
-local EffectsSection = VisualTab:CreateSection("Effects")
-
-local EffectToggle = EffectsSection:CreateToggle("Enable Glow", false, function(State)
-	print("Glow:", State)
-end, nil, nil, false, "GlowEffect")
-
-local GlowColor = EffectsSection:CreateColorpicker("Glow Color", function(Color, Transparency)
-	print("Color:", Color, "Alpha:", Transparency)
-end, nil, nil, EffectToggle)
-
--- HUD
-local Hud = Library:Hud()
-Hud:SetText("Speed: 16\nHealth: 100")
-Hud:SetTextColor(Color3.fromRGB(255, 255, 255))
-Hud:SetTextSize(14)
-Hud:SetVisibility(true)
-
--- Settings tab — config management
+local ConfigManager = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/Ornzora/Xclusive-UI/main/Library/ConfigManager.lua"
+))()
 ConfigManager:SetLibrary(Library)
 ConfigManager:SetWindow(Window)
-ConfigManager:SetFolder("XclusiveHub")
 ConfigManager:BuildConfigSection(SettingsTab)
-ConfigManager:LoadAutoloadConfig()
+
+-- Info
+local InfoTab = Window:CreateTab("Info")
+local StatSec = InfoTab:CreateSection("Stats")
+local fpsLbl  = StatSec:CreateLabel("FPS: --")
+local pingLbl = StatSec:CreateLabel("Ping: --")
+
+game:GetService("RunService").Heartbeat:Connect(function(dt)
+    fpsLbl:UpdateText(string.format("FPS: %d", math.round(1 / dt)))
+    local ok, ping = pcall(function()
+        return math.round(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
+    end)
+    if ok then pingLbl:UpdateText("Ping: " .. ping .. " ms") end
+end)
+
+-- HUD
+local hud = Library:Hud()
+hud:SetTextColor(Color3.fromRGB(255, 200, 0)):SetTextSize(13):SetPadding(10, 10, 0, 0)
+game:GetService("RunService").Heartbeat:Connect(function()
+    local active = {}
+    if Library.flags["aimbot"] then table.insert(active, "Aimbot") end
+    if Library.flags["esp"]    then table.insert(active, "ESP")    end
+    if Library.flags["fly"]    then table.insert(active, "Fly")    end
+    hud:SetText(#active > 0 and "Active: " .. table.concat(active, " | ") or "")
+end)
+
+-- Widgets
+Library:CreateKeybindViewer({ Position = UDim2.new(0, 10, 0.5, 0) })
+Library:CreateToggleList({ Position = UDim2.new(0, 230, 0.5, 0), ShowOnlyEnabled = true })
+
+Library:Notify("Advanced Script", "Loaded.", 3)
 ```
+
+---
+
+### Admin Panel
+
+```lua
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ornzora/Xclusive-UI/main/LoadString.lua"))()
+local Players  = game:GetService("Players")
+
+local Window = Library:CreateWindow({
+    WindowName = "Admin Panel",
+    Color      = Color3.fromRGB(80, 200, 120),
+    Keybind    = Enum.KeyCode.F2,
+})
+
+-- Players tab
+local PlayersTab = Window:CreateTab("Players")
+local ActionSec  = PlayersTab:CreateSection("Actions")
+
+local targetDrop = ActionSec:CreateDropdown("Target", {}, function(name) end)
+
+local function refreshPlayers()
+    targetDrop:ClearOptions()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= Players.LocalPlayer then targetDrop:AddOption(p.Name) end
+    end
+end
+refreshPlayers()
+
+Players.PlayerAdded:Connect(function(p)
+    targetDrop:AddOption(p.Name)
+    Library:Notify("Joined", p.Name, 3)
+end)
+Players.PlayerRemoving:Connect(function(p)
+    targetDrop:RemoveOption(p.Name)
+    Library:Notify("Left", p.Name, 3)
+end)
+
+ActionSec:CreateButton("Refresh", refreshPlayers)
+ActionSec:CreateButton("Teleport to Target", function()
+    local name = Library.flags["target"]
+    local p = name and Players:FindFirstChild(name)
+    if p and p.Character then
+        Players.LocalPlayer.Character:MoveTo(p.Character.HumanoidRootPart.Position + Vector3.new(2, 0, 0))
+    end
+end)
+
+-- Server tab with hidden advanced section
+local ServerTab    = Window:CreateTab("Server")
+local ServerSec    = ServerTab:CreateSection("Controls")
+local AdvancedSec  = ServerTab:CreateSection("Advanced")
+AdvancedSec:SetVisible(false)
+
+ServerSec:CreateToggle("Show Advanced", false, function(s) AdvancedSec:SetVisible(s) end)
+ServerSec:CreateToggle("Shutdown Lock", false, function(s) end, false, "shutdown_lock", "dangerous")
+
+AdvancedSec:CreateTextBox("Announce", "", "Enter message...", function(msg)
+    if msg ~= "" then Library:Notify("Announce", msg, 5) end
+end, true)
+
+-- Logs tab
+local LogsTab = Window:CreateTab("Logs")
+local LogSec  = LogsTab:CreateSection("Event Log")
+
+Players.PlayerAdded:Connect(function(p)
+    LogSec:CreateLabel(string.format("[%.0fs] JOIN: %s", os.clock(), p.Name))
+end)
+Players.PlayerRemoving:Connect(function(p)
+    LogSec:CreateLabel(string.format("[%.0fs] LEAVE: %s", os.clock(), p.Name))
+end)
+
+-- Config
+local ConfigManager = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/Ornzora/Xclusive-UI/main/Library/ConfigManager.lua"
+))()
+ConfigManager:SetLibrary(Library)
+ConfigManager:SetWindow(Window)
+ConfigManager:BuildConfigSection(Window:CreateTab("Config"))
+
+Library:Notify("Admin Panel", #Players:GetPlayers() .. " players online.", 4)
+```
+
+---
+
+## Common Patterns
+
+**Read state via flags**
+```lua
+if Library.flags["esp"] then renderESP() end
+print(Library.flags["speed"])
+```
+
+**Programmatic update**
+```lua
+local s = Section:CreateSlider("Speed", 16, 200, 16, true, function(v)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v
+end)
+s:SetValue(16)
+s:GetValue()
+```
+
+**Exclusive toggle group**
+```lua
+local group = {}
+local function addExclusive(name, flag)
+    group[flag] = Section:CreateToggle(name, false, function(state)
+        if state then
+            for k, t in pairs(group) do
+                if k ~= flag then t:SetState(false) end
+            end
+        end
+    end, false, flag)
+end
+addExclusive("Mode: Passive",    "mode_passive")
+addExclusive("Mode: Aggressive", "mode_aggro")
+addExclusive("Mode: Stealth",    "mode_stealth")
+```
+
+**Dynamic dropdown**
+```lua
+local drop = Section:CreateDropdown("Target", {}, function(name) setTarget(name) end)
+
+for _, p in pairs(game.Players:GetPlayers()) do drop:AddOption(p.Name) end
+game.Players.PlayerAdded:Connect(function(p) drop:AddOption(p.Name) end)
+game.Players.PlayerRemoving:Connect(function(p) drop:RemoveOption(p.Name) end)
+```
+
+**Conditional section**
+```lua
+local adv = Tab:CreateSection("Advanced")
+adv:SetVisible(false)
+Section:CreateToggle("Show Advanced", false, function(s) adv:SetVisible(s) end)
+```
+
+**Live label**
+```lua
+local lbl = Section:CreateLabel("FPS: --")
+game:GetService("RunService").Heartbeat:Connect(function(dt)
+    lbl:UpdateText(string.format("FPS: %d", math.round(1 / dt)))
+end)
+```
+
+---
+
+## Troubleshooting
+
+**UI is invisible after `CreateWindow`**
+Ensure you are on the latest `Module.lua`. The window now defaults to `gethui()` or `CoreGui` when no parent is passed.
+
+**Clicks pass through the UI**
+Update to the latest `Module.lua`. Orphan UI cleanup runs automatically in `CreateWindow`.
+
+**Dropdown closes immediately after opening**
+Wrap the trigger in `task.wait()` to let the input frame settle before the outside-click listener fires.
+
+**Config not saving**
+Requires `readfile`, `writefile`, and `isfile`. If your executor lacks these, the config section will not function.
+
+**UI keybind does nothing on mobile**
+The F3 keybind is disabled on mobile by design. Use `Window:Toggle(bool)` or a UI button instead.
+
+**`Library:Notify` shows for 15 seconds**
+The default duration is `15`. Pass an explicit value: `Library:Notify("Title", "Content", 4)`.
+
+**Duplicate UI after re-execution**
+Always call `Library:Destroy()` before re-running, or use the safe re-execution pattern in [Utilities](#utilities).

@@ -74,36 +74,6 @@ G2L["8"]["Text"] = [[XclusiveUI]];
 G2L["8"]["Name"] = [[LibraryName]];
 G2L["8"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
 
-G2L["9"] = Instance.new("TextBox", G2L["6"]);
-G2L["9"]["TextColor3"] = Color3.fromRGB(201, 201, 201);
-G2L["9"]["PlaceholderColor3"] = Color3.fromRGB(101, 101, 101);
-G2L["9"]["BorderSizePixel"] = 0;
-G2L["9"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-G2L["9"]["TextWrapped"] = true;
-G2L["9"]["TextSize"] = 14;
-G2L["9"]["Name"] = [[SearchBar]];
-G2L["9"]["BackgroundColor3"] = Color3.fromRGB(26, 26, 26);
-G2L["9"]["FontFace"] = Font.new([[rbxasset://fonts/families/GothamSSm.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["9"]["AnchorPoint"] = Vector2.new(1, 0.5);
-G2L["9"]["ClearTextOnFocus"] = false;
-G2L["9"]["ClipsDescendants"] = true;
-G2L["9"]["PlaceholderText"] = [[Search]];
-G2L["9"]["Size"] = UDim2.new(0, 90, 0, 20);
-G2L["9"]["Position"] = UDim2.new(0.95, -10, 0.6, 0);
-G2L["9"]["Text"] = [[]];
-G2L["9"]["BackgroundTransparency"] = 1;
-
-G2L["a"] = Instance.new("TextButton", G2L["9"]);
-G2L["a"]["TextSize"] = 16;
-G2L["a"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
-G2L["a"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["a"]["AnchorPoint"] = Vector2.new(1, 0.5);
-G2L["a"]["Size"] = UDim2.new(0, 20, 0, 20);
-G2L["a"]["BackgroundTransparency"] = 1;
-G2L["a"]["Name"] = [[ClearButton]];
-G2L["a"]["Text"] = [[✕]];
-G2L["a"]["Visible"] = false;
-G2L["a"]["Position"] = UDim2.new(1, -5, 0.5, 0);
 
 G2L["b"] = Instance.new("TextButton", G2L["6"]);
 G2L["b"]["TextSize"] = 20;
